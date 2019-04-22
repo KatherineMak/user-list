@@ -1,0 +1,235 @@
+import React, { Component } from 'react';
+import './App.css';
+
+class UserRow extends React.Component {
+    render() {
+        const user = this.props.user;
+
+        return (
+            <tr>
+                <td>{user.name.first}</td>
+                <td>{user.name.last}</td>
+                <td>{user.login.username}</td>
+                <td>{user.phone}</td>
+                <td>{user.location.state}</td>
+            </tr>
+        );
+    }
+}
+
+class UserTable extends React.Component {
+    render() {
+        const filterText = this.props.filterText;
+        const maleGenderOnly = this.props.maleGenderOnly;
+        const femaleGenderOnly = this.props.femaleGenderOnly;
+
+        const rows = [];
+
+        this.props.users.forEach((user) => {
+            if (user.name.first.toLowerCase().indexOf(filterText.toLowerCase()) === -1) {
+                return;
+            }
+            if (maleGenderOnly && !(user.gender === 'male')) {
+                return;
+            }
+            if (femaleGenderOnly && !(user.gender === 'female')) {
+                return;
+            }
+            rows.push(
+                <UserRow
+                    user={user}
+                    key={user.name.first} />
+            );
+        });
+
+        return (
+            <div className='container'>
+                <div className='row'>
+                    <div className='col-2'>
+                        Last name
+                    </div>
+                    <div className='col-2'>
+                        First name
+                    </div>
+                    <div className='col-2'>
+                        Username
+                    </div>
+                    <div className='col-2'>
+                        Phone
+                    </div>
+                    <div className='col-2'>
+                        Location
+                    </div>
+                </div>
+            </div>
+            <div>
+            </div>
+        
+        );
+    }
+}
+
+class SearchBar extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
+        this.handleMaleGenderChange = this.handleMaleGenderChange.bind(this);
+        this.handleFemaleGenderChange = this.handleFemaleGenderChange.bind(this);
+    }
+
+    handleFilterTextChange(e) {
+        this.props.onFilterTextChange(e.target.value);
+    }
+
+    handleMaleGenderChange(e) {
+        this.props.onMaleGenderChange(e.target.checked);
+    }
+
+    handleFemaleGenderChange(e) {
+        this.props.onFemaleGenderChange(e.target.checked);
+    }
+
+    render() {
+        return (
+            <form >
+                <input
+                    type="text"
+                    placeholder="Search..."
+                    value={this.props.filterText}
+                    onChange={this.handleFilterTextChange}
+                />
+                <p>
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        checked={this.props.maleGenderOnly}
+                        onChange={this.handleMaleGenderChange}
+                    />
+                    {' '}
+                    Male gender
+                </p>
+                <p>
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        checked={this.props.femaleGenderOnly}
+                        onChange={this.handleFemaleGenderChange}
+                    />
+                    {' '}
+                    Female gender
+                </p>
+            </form>
+        );
+    }
+}
+
+class FilterableUserTable extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            filterText: '',
+            maleGenderOnly: false,
+            femaleGenderOnly: false
+
+        };
+
+        this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
+        this.handleMaleGenderChange = this.handleMaleGenderChange.bind(this);
+        this.handleFemaleGenderChange = this.handleFemaleGenderChange.bind(this);
+    }
+
+    handleFilterTextChange(filterText) {
+        this.setState({
+            filterText: filterText
+        });
+    }
+
+    handleMaleGenderChange(maleGenderOnly) {
+        this.setState({
+            maleGenderOnly: maleGenderOnly
+        })
+    }
+
+    handleFemaleGenderChange(femaleGenderOnly) {
+        this.setState({
+            femaleGenderOnly: femaleGenderOnly
+        })
+    }
+
+    render() {
+        return (
+            <div>
+                <SearchBar
+                    filterText={this.state.filterText}
+                    maleGenderOnly={this.state.maleGenderOnly}
+                    femaleGenderOnly={this.state.femaleGenderOnly}
+                    onFilterTextChange={this.handleFilterTextChange}
+                    onMaleGenderChange={this.handleMaleGenderChange}
+                    onFemaleGenderChange={this.handleFemaleGenderChange}
+                />
+                <UserTable
+                    users={this.props.users}
+                    filterText={this.state.filterText}
+                    maleGenderOnly={this.state.maleGenderOnly}
+                    femaleGenderOnly={this.state.femaleGenderOnly}
+                />
+            </div>
+        );
+    }
+}
+
+// const USERS2 = [
+//     {gender: "female", category:'Programmer', last: 'Makogon', first: 'Kate', username: 'makkate2000', phone: '0689808244', location: 'Ukraine'},
+//     {gender: "male", category:'Programmer', last: 'Dotsenko', first: 'Vlad', username: 'vladdots', phone: '066666666', location: 'Ukraine'},
+//     {gender: "male", category:'Sysadmin', last: 'Makogon', first: 'Oleg', username: 'makoleg', phone: '0684490273', location: 'Ukraine'}
+//
+// ];
+
+class App extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            error: null,
+            isLoaded: false,
+            users: []
+        };
+    }
+
+    componentDidMount() {
+        fetch("https://randomuser.me/api/?results=10")
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState({
+                        isLoaded: true,
+                        users: result.results
+                    });
+                },
+                // Note: it's important to handle errors here
+                // instead of a catch() block so that we don't swallow
+                // exceptions from actual bugs in components.
+                (error) => {
+                    this.setState({
+                        isLoaded: true,
+                        error
+                    });
+                }
+            )
+    }
+    render() {
+        const { error, isLoaded} = this.state;
+        if (error) {
+            return <div>Error: {error.message}</div>;
+        } else if (!isLoaded) {
+            return <div>Loading...</div>;
+        } else {
+            return (
+                <div className="App align-items-center"><FilterableUserTable users={this.state.users}/>
+
+                </div>
+            );
+        }
+    }
+}
+
+export default App;
