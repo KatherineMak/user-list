@@ -4,20 +4,89 @@ import { IoMdAdd } from 'react-icons/io';
 import { IoIosWoman } from 'react-icons/io';
 import { IoIosMan } from 'react-icons/io';
 import { IoMdRemove } from 'react-icons/io';
+import { IoIosCloseCircle } from 'react-icons/io';
+import Popup from "reactjs-popup";
+import CanvasJSReact from './canvasjs.react';
+var CanvasJS = CanvasJSReact.CanvasJS;
+var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
-class Popup extends React.Component {
+class ControlledPopup extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = { open: false }
+        this.openModal = this.openModal.bind(this)
+        this.closeModal = this.closeModal.bind(this)
+
+    }
+    openModal (){
+        this.setState({ open: true })
+    }
+    closeModal () {
+        this.setState({ open: false })
+    }
+
     render() {
+        const genderM = this.props.genderMale;
+        const genderF = this.props.genderFemale;
+        const options = {
+            animationEnabled: true,
+            exportEnabled: true,
+            theme: "light1", // "light1", "dark1", "dark2"
+            title: {
+                text: "Gender users"
+            },
+            data: [{
+                type: "pie",
+                toolTipContent: "<b>{label}</b>: {y}%",
+                showInLegend: "true",
+                legendText: "{label}",
+                indexLabelFontSize: 16,
+                indexLabel: "{label}: {y}%",
+                startAngle: -90,
+                dataPoints: [
+                    {y: genderM, label: "Male"},
+                    {y: genderF, label: "Female"}
+                ]
+            }]
+        }
         return (
-            <div className='popup'>
-                <div className='popup_inner'>
-                    <h1>{this.props.text}</h1>
-                    <button onClick={this.props.closePopup}>close me</button>
+            <div>
+                <div className="row">
+                    <div className={'col-md-10 title'}>
+                        <h1><b>User list</b></h1>
+                    </div>
+                    <div className={'col-md-2 btn-chart'}>
+                        <button className="btn btn-secondary" onClick={this.openModal}>
+                            Show chart
+                        </button>
+                    </div>
                 </div>
+                <Popup
+                    open={this.state.open}
+                    closeOnDocumentClick
+                    onClose={this.closeModal}
+                >
+                    <div className={"my-modal"}>
+                        <div className="row">
+                            <button className="close"  onClick={this.closeModal}>
+                                <IoIosCloseCircle size={40} color='#666666'/>
+                            </button>
+                        </div>
+                        <div className="row">
+                            <CanvasJSChart options = {options}
+                                /* onRef={ref => this.chart = ref}*/
+                            />
+                            {/*<div className="modal">
+                                <p>lalala</p>
+
+                            </div>*/}
+                        </div>
+                    </div>
+                </Popup>
             </div>
-        );
+        )
     }
 }
-
 class Toggle extends React.Component {
     constructor(props) {
         super(props);
@@ -302,28 +371,41 @@ class FilterableUserTable extends React.Component {
 // ];
 
 class App extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
             error: null,
             isLoaded: false,
             users: [],
-            showPopup: false
+            showPopup: false,
+            genderMale: 0,
+            genderFemale: 0
         };
     }
-    togglePopup() {
-        this.setState({
-            showPopup: !this.state.showPopup
-        });
-    }
     componentDidMount() {
-        fetch("https://randomuser.me/api/?results=5")
+        fetch("https://randomuser.me/api/?results=10")
             .then(res => res.json())
             .then(
                 (result) => {
+                    let countMale = 0;
+                    let countFemale = 0;
+                    result.results.forEach((user) => {
+                        if (user.gender === 'male') {
+                            countMale++;
+                        }
+                    });
+                    result.results.forEach((user) => {
+                        if (user.gender === 'female') {
+                            countFemale++;
+                        }
+                    });
                     this.setState({
                         isLoaded: true,
-                        users: result.results
+                        users: result.results,
+                        genderMale : countMale*10,
+                        genderFemale: countFemale*10
+                        //genderFemale : this.props.users.forEach((user) => {(this.state.user.gender === 'female')? genderFemale++ : genderFemale})
                     });
                 },
                 // Note: it's important to handle errors here
@@ -345,8 +427,10 @@ class App extends Component {
             return <div>Loading...</div>;
         } else {
             return (
-                <div className="App align-items-center"><FilterableUserTable users={this.state.users}/>
-                    
+                <div className="App align-items-center">
+
+                    <ControlledPopup genderMale={this.state.genderMale} genderFemale={this.state.genderFemale}/>
+                    <FilterableUserTable users={this.state.users}/>
                 </div>
             );
         }
