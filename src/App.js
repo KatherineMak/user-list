@@ -52,11 +52,11 @@ class ControlledPopup extends React.Component {
         return (
             <div>
                 <div className="row">
-                    <div className={'col-md-10 title'}>
+                    <div className={'offset-md-2 col-md-8 title'}>
                         <h1><b>User list</b></h1>
                     </div>
                     <div className={'col-md-2 btn-chart'}>
-                        <button className="btn btn-secondary" onClick={this.openModal}>
+                        <button className="btn-chart btn btn-secondary" onClick={this.openModal}>
                             Show chart
                         </button>
                     </div>
@@ -268,8 +268,8 @@ class SearchBar extends React.Component {
                 <div className='container search-form'>
 
                     <div className='row justify-content-center'>
-                        <div className='col-3'>
-                            <p>Search by first name.</p><br/>
+                        <div className='search-title col-3'>
+                            <p>Search by first name</p><br/>
                         </div>
                         <div className='col-4'>
                         <input
@@ -281,7 +281,7 @@ class SearchBar extends React.Component {
                         </div>
                     </div>
                     <div className='row justify-content-around'>
-                        <div className='col-4'>
+                        <div className='col-3'>
                             <input
                                 className="form-check-input"
                                 type="checkbox"
@@ -291,7 +291,7 @@ class SearchBar extends React.Component {
                             {' '}
                             Male gender
                         </div>
-                        <div className='col-4'>
+                        <div className='col-3'>
                             <input
                                 className="form-check-input"
                                 type="checkbox"
