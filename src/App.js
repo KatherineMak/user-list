@@ -431,7 +431,7 @@ class App extends Component {
                 <div className="App align-items-center">
 
                     <ControlledPopup genderMale={this.state.genderMale} genderFemale={this.state.genderFemale}/>
-                    <FilterableUserTable users={this.state.users}/>
+                    {/*<FilterableUserTable users={this.state.users}/>*/}
                 </div>
             );
         }
