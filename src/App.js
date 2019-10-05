@@ -87,6 +87,7 @@ class ControlledPopup extends React.Component {
         )
     }
 }
+
 class Toggle extends React.Component {
     constructor(props) {
         super(props);
@@ -152,14 +153,14 @@ class UserRow extends React.Component {
                                 <b>{user.name.first}</b> {genderIco}
                             </div>
                         </div>
-                        <div className='row'>
-                            <div className='col-3 offset-md-1'>
-                                <b>Username</b> {user.login.username} <br/>
-                                <b>Registered</b> {user.registered.date}<br/>
-                                <b>Email</b> {user.email}<br/>
-                            </div>
-                            <div className='col-3'>
-                                <b>Adress</b> {user.location.street}<br/>
+                         <div className='row'>
+                             <div className='col-3 offset-md-1'>
+                                 <b>Username</b> {user.login.username} <br/>
+                                 <b>Registered</b> {user.registered.date}<br/>
+                                 <b>Email</b> {user.email}<br/>
+                             </div>
+                             <div className='col-3'>
+                                 {/*<b>Adress</b> {user.location.street}<br/>*/}
                                 <b>City</b> {user.location.city}<br/>
                                 <b>Zip Code</b> {user.location.postcode}<br/>
                             </div>
@@ -352,7 +353,7 @@ class FilterableUserTable extends React.Component {
                     onMaleGenderChange={this.handleMaleGenderChange}
                     onFemaleGenderChange={this.handleFemaleGenderChange}
                 />
-                <UserTable
+                 <UserTable
                     users={this.props.users}
                     filterText={this.state.filterText}
                     maleGenderOnly={this.state.maleGenderOnly}
